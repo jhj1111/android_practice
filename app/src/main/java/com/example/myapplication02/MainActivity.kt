@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BottomAppBar // Keep for potential other uses or remove if NavigationBar is the sole content
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +27,7 @@ import androidx.compose.material.icons.filled.List // Example Icon
 import androidx.compose.material.icons.filled.AccountCircle // Example Icon
 import androidx.compose.material.icons.filled.Person // Example Icon for Login
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 // import androidx.compose.ui.tooling.preview.Preview // Preview might need adjustments
@@ -38,9 +37,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication02.navigation.AppNavigation
 import com.example.myapplication02.ui.theme.MyApplication02Theme
+import com.example.myapplication02.AddMemoViewModel
 
 const val MAIN_SCREEN_ROOT = "home"
-const val SCREEN01_SCREEN_ROOT = "screen01"
+const val CREAT_MEMO_ROOT = "screen01"
 const val SCREEN02_SCREEN_ROOT = "screen02"
 const val LOGIN_SCREEN_ROOT = "login"
 
@@ -82,7 +82,7 @@ fun MyAppNavHost(
     // Define navigation items
     val navigationItems = listOf(
         BottomNavigationItem("Home", Icons.Filled.Home, MAIN_SCREEN_ROOT), // Added Home for completeness
-        BottomNavigationItem("Screen01", Icons.Filled.List, SCREEN01_SCREEN_ROOT),
+        BottomNavigationItem("Screen01", Icons.Filled.List, CREAT_MEMO_ROOT),
         BottomNavigationItem("Screen02", Icons.Filled.AccountCircle, SCREEN02_SCREEN_ROOT),
         BottomNavigationItem("LogIn", Icons.Filled.Person, LOGIN_SCREEN_ROOT)
     )
@@ -127,6 +127,7 @@ fun MyAppNavHost(
                 id = id,
                 password = password,
                 onValueChange = { newText -> text.value = newText },
+                addMemo = viewModel()
             )
         }
     } else {
@@ -139,6 +140,7 @@ fun MyAppNavHost(
             id = id,
             password = password,
             onValueChange = { newText -> text.value = newText },
+            addMemo = viewModel()
         )
     }
 }
@@ -146,6 +148,7 @@ fun MyAppNavHost(
 @Composable
 fun GreetingMain(
     viewModel: CounterViewModel = viewModel(),
+    liveModel: CounterLiveModel = viewModel(),
     name: String = "",
     id: String = "",
     password: String = "",
@@ -155,6 +158,7 @@ fun GreetingMain(
     onIncrementCount: () -> Unit
 ) {
     val viewModelCount = viewModel.count.collectAsState()
+    val liveModelCount = liveModel.counter.observeAsState(0)
 
     Column(modifier = modifier) {
         Text(
@@ -175,6 +179,12 @@ fun GreetingMain(
             viewModel.incrementCounter()
         }) {
             Text("ViewModel StateFlow 사용 카운트: ${viewModelCount.value}")
+        }
+
+        Button(onClick = {
+            liveModel.incrementCounter()
+        }) {
+            Text("LiveData 사용 카운트: ${liveModelCount.value}")
         }
     }
 }
