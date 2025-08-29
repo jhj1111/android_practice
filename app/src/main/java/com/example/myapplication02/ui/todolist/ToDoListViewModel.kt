@@ -1,4 +1,4 @@
-package com.example.myapplication02
+package com.example.myapplication02.ui.todolist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,23 +8,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel: ViewModel() {
+open class ToDoListViewModel: ViewModel() {
     // private MutableStateFlow
     private val _inputText = MutableStateFlow("")
     private val _listItems = MutableStateFlow<List<String>>(emptyList<String>())
     private val _isChecked = MutableStateFlow<List<Boolean>>(emptyList<Boolean>())
     //public read-only StateFlow
-    val InputText: StateFlow<String> get() = _inputText.asStateFlow()
-    val ListItems: StateFlow<List<String>> get() = _listItems.asStateFlow()
-    val isChecked: StateFlow<List<Boolean>> get() = _isChecked.asStateFlow()
+    open val InputText: StateFlow<String> get() = _inputText.asStateFlow()
+    open val ListItems: StateFlow<List<String>> get() = _listItems.asStateFlow()
+    open val isChecked: StateFlow<List<Boolean>> get() = _isChecked.asStateFlow()
 
-    fun inputText(text: String) {
+    open fun inputText(text: String) {
         viewModelScope.launch { // Setter
             _inputText.value = text
         }
     }
 
-    fun addToDoItem(item: String, checked: Boolean) {
+    open fun addToDoItem(item: String, checked: Boolean) {
         viewModelScope.launch {
             _listItems.update { currentList ->
                 currentList + item
@@ -35,7 +35,7 @@ class ToDoListViewModel: ViewModel() {
         }
     }
 
-    fun removeToDoItem(item: String, index: Int) {
+    open fun removeToDoItem(item: String, index: Int) {
         viewModelScope.launch {
             _listItems.update { currentList ->
                 currentList - item
@@ -48,7 +48,7 @@ class ToDoListViewModel: ViewModel() {
         }
     }
 
-    fun updateChecked(index: Int) {
+    open fun updateChecked(index: Int) {
         viewModelScope.launch {
             _isChecked.update { currentList ->
                 currentList.toMutableList().also {

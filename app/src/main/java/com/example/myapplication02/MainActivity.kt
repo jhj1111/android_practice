@@ -37,7 +37,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication02.navigation.AppNavigation
 import com.example.myapplication02.ui.theme.MyApplication02Theme
-import com.example.myapplication02.AddMemoViewModel
 
 const val MAIN_SCREEN_ROOT = "home"
 const val CREAT_MEMO_ROOT = "screen01"
@@ -127,7 +126,7 @@ fun MyAppNavHost(
                 id = id,
                 password = password,
                 onValueChange = { newText -> text.value = newText },
-                addMemo = viewModel()
+                addMemoViewModel = viewModel()
             )
         }
     } else {
@@ -140,7 +139,7 @@ fun MyAppNavHost(
             id = id,
             password = password,
             onValueChange = { newText -> text.value = newText },
-            addMemo = viewModel()
+            addMemoViewModel = viewModel()
         )
     }
 }

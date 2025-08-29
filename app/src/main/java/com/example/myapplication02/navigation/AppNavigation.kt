@@ -7,15 +7,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.myapplication02.AddMemo
-import com.example.myapplication02.AddMemoViewModel
-import com.example.myapplication02.ToDoList
-import com.example.myapplication02.GreetingMain
+import com.example.myapplication02.ui.memolist.AddMemo
+import com.example.myapplication02.ui.memolist.AddMemoViewModel
+import com.example.myapplication02.ui.todolist.ToDoList
 import com.example.myapplication02.LOGIN_SCREEN_ROOT
-import com.example.myapplication02.LogIn
+import com.example.myapplication02.ui.login.LogIn
 import com.example.myapplication02.MAIN_SCREEN_ROOT
 import com.example.myapplication02.CREAT_MEMO_ROOT
-import com.example.myapplication02.MemoList
+import com.example.myapplication02.ui.memolist.MemoList
 import com.example.myapplication02.SCREEN02_SCREEN_ROOT
 
 @Composable
@@ -28,7 +27,7 @@ fun AppNavigation(
     id: MutableState<String>,
     password: MutableState<String>,
     onValueChange: (String) -> Unit,
-    addMemo: AddMemoViewModel = viewModel(),
+    addMemoViewModel: AddMemoViewModel = viewModel(),
 ) {
     NavHost(
         navController = navController,
@@ -45,39 +44,7 @@ fun AppNavigation(
 //            )
             MemoList(
                 navController = navController,
-                memoList = addMemo
-            )
-        }
-
-        composable("$MAIN_SCREEN_ROOT/{value}") { backStackEntry ->
-            val value = backStackEntry.arguments?.getString("value") ?: ""
-
-//            GreetingMain(
-//                name = value,
-//                navController = navController,
-//                count = countMainButton,
-//                onIncrementCount = onIncrementCount,
-//            )
-            MemoList(
-                navController = navController,
-                memoList = addMemo
-            )
-        }
-
-        composable("$MAIN_SCREEN_ROOT/{id}/{password}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id") ?: ""
-            val password = backStackEntry.arguments?.getString("password") ?: ""
-
-//            GreetingMain(
-//                id = id,
-//                password = password,
-//                navController = navController,
-//                count = countMainButton,
-//                onIncrementCount = onIncrementCount,
-//            )
-            MemoList(
-                navController = navController,
-                memoList = addMemo
+                text = addMemoViewModel
             )
         }
 
@@ -93,7 +60,7 @@ fun AppNavigation(
         composable(CREAT_MEMO_ROOT) {
             AddMemo( // Assuming Screen is defined in AddMemo.kt
                 navController = navController,
-                addMemo = addMemo,
+                addMemoViewModel = addMemoViewModel,
             )
         }
 

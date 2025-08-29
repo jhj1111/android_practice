@@ -1,17 +1,14 @@
-package com.example.myapplication02
+package com.example.myapplication02.ui.memolist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AddMemoViewModel: ViewModel() {
+open class AddMemoViewModel: ViewModel() {
     // private MutableStateFlow
     private val _title = MutableStateFlow("")
     private val _content = MutableStateFlow("")
@@ -20,7 +17,7 @@ class AddMemoViewModel: ViewModel() {
     //public read-only StateFlow
     val title: StateFlow<String> get() = _title.asStateFlow()
     val content: StateFlow<String> get() = _content.asStateFlow()
-    val listArticles: StateFlow<Map<String, String>> get() = _listArticles.asStateFlow()
+    open val listArticles: StateFlow<Map<String, String>> get() = _listArticles.asStateFlow()
 
 
     fun setTitle(text: String) {
@@ -37,15 +34,23 @@ class AddMemoViewModel: ViewModel() {
         }
     }
 
-    fun addArticle(title: String, content: String) {
-        // ViewModelScope를 사용하여 코루틴에서 상태 변경
-        viewModelScope.launch { // Setter
+    fun addArticle() { // 파라미터 제거
+        val currentTitle = _title.value // 현재 ViewModel의 title 값
+        val currentContent = _content.value // 현재 ViewModel의 content 값
+
+        if (currentTitle.isNotBlank() && currentContent.isNotBlank()) {
             _listArticles.update { currentList ->
-                currentList + (title to content)
+                currentList + (currentTitle to currentContent)
             }
+            // 글 추가 후 입력 필드를 비우는 것은 Composable에서 처리하거나 여기서 할 수 있습니다.
+            // _title.value = ""
+            // _content.value = ""
         }
     }
 
-
+    fun deleteArticle(title: String) {
+        _listArticles.update { currentList ->
+            currentList - title
+        }
+    }
 }
-
