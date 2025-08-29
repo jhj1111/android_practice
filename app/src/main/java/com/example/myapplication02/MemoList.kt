@@ -27,13 +27,6 @@ fun MemoList(
         Text(listArticles.value.size.toString())
         LazyColumn(modifier = Modifier.height(200.dp)) {
 
-//            items(listArticles.value.size) { index ->
-//                val title = listArticles.value.keys.elementAt(index)
-//                val content = listArticles.value.values.elementAt(index)
-//                Text(title)
-//                Text(content)
-//            }
-
             items(listArticles.value.toList()) { (title, content) ->
                 Text(title)
                 Text(content)
