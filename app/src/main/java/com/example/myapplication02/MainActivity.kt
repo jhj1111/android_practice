@@ -36,6 +36,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication02.navigation.AppNavigation
+import com.example.myapplication02.ui.login.LogInViewModel
 import com.example.myapplication02.ui.theme.MyApplication02Theme
 
 const val MAIN_SCREEN_ROOT = "home"
@@ -50,13 +51,14 @@ data class BottomNavigationItem(
     val route: String
 )
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyApplication02Theme {
-                MyAppNavHost()
+                MyAppNavHost(loginViewModel = viewModel())
             }
         }
     }
@@ -67,16 +69,14 @@ class MainActivity : ComponentActivity() {
 fun MyAppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    loginViewModel: LogInViewModel,
 ) {
-    var countMainButton by remember { mutableStateOf(1) }
-    val text = remember { mutableStateOf("123") }
-    val id = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
     val showMainScaffold = currentRoute != LOGIN_SCREEN_ROOT
+    val id = loginViewModel.id.collectAsState()
+    val user = if (id.value.isNotBlank()) id.value else "Guest"
 
     // Define navigation items
     val navigationItems = listOf(
@@ -89,7 +89,7 @@ fun MyAppNavHost(
     if (showMainScaffold) {
         Scaffold(
             modifier = modifier.fillMaxSize(),
-            topBar = { TopAppBar(title = { Text("탑바") }) },
+            topBar = { TopAppBar(title = { Text(user) }) },
             bottomBar = {
                 NavigationBar {
                     navigationItems.forEach { item ->
@@ -120,26 +120,16 @@ fun MyAppNavHost(
             AppNavigation(
                 navController = navController,
                 modifier = Modifier.padding(innerPadding),
-                countMainButton = countMainButton,
-                onIncrementCount = { countMainButton++ },
-                text = text,
-                id = id,
-                password = password,
-                onValueChange = { newText -> text.value = newText },
-                addMemoViewModel = viewModel()
+                addMemoViewModel = viewModel(),
+                loginViewModel = loginViewModel,
             )
         }
     } else {
         AppNavigation(
             navController = navController,
             modifier = modifier.fillMaxSize(),
-            countMainButton = countMainButton,
-            onIncrementCount = { countMainButton++ },
-            text = text,
-            id = id,
-            password = password,
-            onValueChange = { newText -> text.value = newText },
-            addMemoViewModel = viewModel()
+            addMemoViewModel = viewModel(),
+            loginViewModel = loginViewModel,
         )
     }
 }

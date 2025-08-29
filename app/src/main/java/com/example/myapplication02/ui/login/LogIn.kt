@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,13 +29,12 @@ import com.example.myapplication02.MAIN_SCREEN_ROOT
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogIn(
+    logInViewModel: LogInViewModel, // Added LogInViewModel parameter
     modifier: Modifier = Modifier, // Keep the modifier parameter
     navController: NavHostController, // Removed default rememberNavController, as it's passed from NavHost
-    id: MutableState<String> = remember { mutableStateOf("") },
-    password: MutableState<String> = remember { mutableStateOf("") },
 ) {
-//    var id by remember { mutableStateOf("") }
-//    var password by remember { mutableStateOf("") }
+    val id = logInViewModel.id.collectAsState() // Use the provided LogInViewModel
+    val password = logInViewModel.password.collectAsState() // Use the provided LogInViewModel
 
     Scaffold(
         modifier = modifier.fillMaxSize(), // Apply the passed modifier
@@ -55,7 +55,7 @@ fun LogIn(
 
             OutlinedTextField(
                 value = id.value,
-                onValueChange = { newId -> id.value = newId },
+                onValueChange = { newId -> logInViewModel.updateId(newId) },
                 label = { Text("아이디") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
@@ -65,7 +65,7 @@ fun LogIn(
 
             OutlinedTextField(
                 value = password.value,
-                onValueChange = { newPassword -> password.value = newPassword },
+                onValueChange = { newPassword -> logInViewModel.updatePassword(newPassword) },
                 label = { Text("비밀번호") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(), // Hides password characters

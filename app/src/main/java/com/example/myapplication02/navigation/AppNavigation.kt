@@ -16,18 +16,14 @@ import com.example.myapplication02.MAIN_SCREEN_ROOT
 import com.example.myapplication02.CREAT_MEMO_ROOT
 import com.example.myapplication02.ui.memolist.MemoList
 import com.example.myapplication02.SCREEN02_SCREEN_ROOT
+import com.example.myapplication02.ui.login.LogInViewModel
 
 @Composable
 fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier, // This will be Modifier.padding(innerPadding) or Modifier.fillMaxSize()
-    countMainButton: Int,
-    onIncrementCount: () -> Unit,
-    text: MutableState<String>,
-    id: MutableState<String>,
-    password: MutableState<String>,
-    onValueChange: (String) -> Unit,
     addMemoViewModel: AddMemoViewModel = viewModel(),
+    loginViewModel: LogInViewModel = viewModel(),
 ) {
     NavHost(
         navController = navController,
@@ -50,9 +46,8 @@ fun AppNavigation(
 
         composable(LOGIN_SCREEN_ROOT) { // Will be fillMaxSize by NavHost
             LogIn(
+                logInViewModel = loginViewModel,
                 navController = navController,
-                id = id,
-                password = password,
                 // modifier for LogIn will be its default. LogIn then uses Scaffold(Modifier.fillMaxSize())
             )
         }
