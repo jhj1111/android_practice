@@ -1,5 +1,6 @@
 package com.example.myapplication02.ui.memolist
 
+import android.R.attr.onClick
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,6 +51,7 @@ fun AddMemo(
 ) {
     val title by addMemoViewModel.title.collectAsState()
     val content by addMemoViewModel.content.collectAsState()
+    val preTitle by addMemoViewModel.preTitle.collectAsState()
 
     Column(
         modifier = modifier
@@ -108,11 +110,12 @@ fun AddMemo(
                 onClick = {
                     if (title.isNotBlank() && content.isNotBlank()) {
                         addMemoViewModel.addArticle() // title, content 인자 제거 (ViewModel 내부 값 사용)
-                        // 입력 필드 초기화는 addArticle 함수 내에서 처리하거나, 여기서 직접 호출
-                        addMemoViewModel.setTitle("")
-                        addMemoViewModel.setContent("")
                         // 성공적으로 추가 후 이전 화면으로 돌아가거나, 목록 화면으로 이동
-                        navController.popBackStack() // 이전 화면으로 돌아가기
+//                        navController.popBackStack() // 이전 화면으로 돌아가기
+                        navController.navigate(MAIN_SCREEN_ROOT) {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 },
                 modifier = Modifier.weight(1f),
