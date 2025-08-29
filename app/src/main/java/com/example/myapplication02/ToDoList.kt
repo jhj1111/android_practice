@@ -41,8 +41,7 @@ fun ToDoList(
 ) {
     val inputToDo = toDoListModel.InputText.collectAsState()
     val listItems = toDoListModel.ListItems.collectAsState()
-    val isChecked = toDoListModel.isChecked.collectAsState()
-
+    val toDoChecked = toDoListModel.isChecked.collectAsState()
 
     Column {
         Text("오늘 할 일")
@@ -62,12 +61,12 @@ fun ToDoList(
                     if (inputToDo.value.isNotBlank()) { // 비어있지 않은 경우에만 처리
                         // toDoListModel.addToDoItem(inputToDo.value) // ViewModel에 할 일 추가 함수 호출 (가정)
                         toDoListModel.inputText("") // 입력 필드 비우기
-                        toDoListModel.addChecked()
-                        toDoListModel.addToDoItem(inputToDo.value) // 리스트에 추가
+                        toDoListModel.addToDoItem(inputToDo.value, false) // 리스트에 추가
                     }
                 }
             )
         )
+//        Text("${toDoChecked.value}")
 
         LazyColumn {
             items(listItems.value.size) { index ->
@@ -76,13 +75,20 @@ fun ToDoList(
                 } else {
                     Row {
                         Checkbox(
-                            checked = isChecked.value[index],
-                            onCheckedChange = {  } // 클릭 시 상태 변경
+                            checked = toDoChecked.value[index],
+                            onCheckedChange = {
+                                toDoListModel.updateChecked(index)
+                            } // 클릭 시 상태 변경
                         )
-                        Text(listItems.value[index],)
+                        Text(
+                            listItems.value[index],
+                            textDecoration = if (toDoChecked.value[index]) TextDecoration.LineThrough else TextDecoration.None
+                            )
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton(
-                            onClick = { toDoListModel.removeToDoItem(listItems.value[index]) },
+                            onClick = {
+                                toDoListModel.removeToDoItem(listItems.value[index], index)
+                                      },
                         ) {
                             Image(
                                 Icons.Filled.Delete,

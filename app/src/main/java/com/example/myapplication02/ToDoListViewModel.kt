@@ -24,44 +24,37 @@ class ToDoListViewModel: ViewModel() {
         }
     }
 
-
-
-    fun addToDoItem(item: String) {
+    fun addToDoItem(item: String, checked: Boolean) {
         viewModelScope.launch {
             _listItems.update { currentList ->
                 currentList + item
             }
+            _isChecked.update { currentList ->
+                currentList + checked
+            }
         }
     }
 
-    fun removeToDoItem(item: String) {
+    fun removeToDoItem(item: String, index: Int) {
         viewModelScope.launch {
             _listItems.update { currentList ->
                 currentList - item
             }
-        }
-    }
-
-    fun addChecked() {
-        // ViewModelScope를 사용하여 코루틴에서 상태 변경
-        viewModelScope.launch { // Setter
-            _isChecked.update { currentList ->
-                currentList + false
+            _isChecked.update { currentChecked ->
+                currentChecked.toMutableList().also {
+                    it.removeAt(index)
+                }
             }
         }
     }
 
-//    fun updateChecked(index: Int) {
-//        // ViewModelScope를 사용하여 코루틴에서 상태 변경
-//        viewModelScope.launch { // Setter
-//            _isChecked.update { currentList ->
-//                if (_isChecked.value[index]==true) {
-//                    currentList.elementAt(index) = false
-//                } else {
-//                    currentList[index] = true
-//                }
-//                currentList
-//            }
-//        }
-//    }
+    fun updateChecked(index: Int) {
+        viewModelScope.launch {
+            _isChecked.update { currentList ->
+                currentList.toMutableList().also {
+                    it[index] = !it[index]
+                }
+            }
+        }
+    }
 }
