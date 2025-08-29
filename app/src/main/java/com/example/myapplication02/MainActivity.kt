@@ -4,8 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,10 +26,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons // Added for default icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home // Example Icon
 import androidx.compose.material.icons.filled.List // Example Icon
 import androidx.compose.material.icons.filled.AccountCircle // Example Icon
 import androidx.compose.material.icons.filled.Person // Example Icon for Login
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -81,7 +88,7 @@ fun MyAppNavHost(
     // Define navigation items
     val navigationItems = listOf(
         BottomNavigationItem("Home", Icons.Filled.Home, MAIN_SCREEN_ROOT), // Added Home for completeness
-        BottomNavigationItem("Screen01", Icons.Filled.List, CREAT_MEMO_ROOT),
+        BottomNavigationItem("Screen01", Icons.AutoMirrored.Filled.List, CREAT_MEMO_ROOT),
         BottomNavigationItem("Screen02", Icons.Filled.AccountCircle, SCREEN02_SCREEN_ROOT),
         BottomNavigationItem("LogIn", Icons.Filled.Person, LOGIN_SCREEN_ROOT)
     )
@@ -89,7 +96,22 @@ fun MyAppNavHost(
     if (showMainScaffold) {
         Scaffold(
             modifier = modifier.fillMaxSize(),
-            topBar = { TopAppBar(title = { Text(user) }) },
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(user)
+                            IconButton(onClick = {
+                                if (user=="Guest") navController.navigate(LOGIN_SCREEN_ROOT) else loginViewModel.logout()
+                            }
+                            )
+                            {
+                                Image(if (user=="Guest") Icons.Filled.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Login")
+                            }
+                        }
+                    }
+                )
+            },
             bottomBar = {
                 NavigationBar {
                     navigationItems.forEach { item ->

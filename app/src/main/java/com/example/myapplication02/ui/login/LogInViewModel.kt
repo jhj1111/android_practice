@@ -28,4 +28,11 @@ open class LogInViewModel: ViewModel() {
             _password.value = newPassword
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            _id.value = ""
+            _password.value = ""
+        }
+    }
 }

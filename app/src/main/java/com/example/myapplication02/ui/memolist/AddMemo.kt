@@ -91,10 +91,13 @@ fun AddMemo(
         ) {
             OutlinedButton(
                 onClick = {
-                    navController.navigate(MAIN_SCREEN_ROOT) {
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                        launchSingleTop = true
-                    }
+//                    navController.navigate(MAIN_SCREEN_ROOT) {
+//                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+//                        launchSingleTop = true
+//                    }
+                    // 입력 필드 초기화는 addArticle 함수 내에서 처리하거나, 여기서 직접 호출
+                    addMemoViewModel.setTitle("")
+                    addMemoViewModel.setContent("")
                 },
                 modifier = Modifier.weight(1f)
             ) {

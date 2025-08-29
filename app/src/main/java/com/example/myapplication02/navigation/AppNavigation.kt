@@ -31,13 +31,6 @@ fun AppNavigation(
         modifier = modifier // Apply the modifier (containing padding or fillMaxSize) to NavHost
     ) {
         composable(MAIN_SCREEN_ROOT) { // Will be correctly padded by NavHost
-//            GreetingMain(
-//                name = "", // Default name
-//                navController = navController,
-//                count = countMainButton,
-//                onIncrementCount = onIncrementCount,
-//                // modifier parameter of GreetingMain will use its default (Modifier)
-//            )
             MemoList(
                 navController = navController,
                 text = addMemoViewModel
