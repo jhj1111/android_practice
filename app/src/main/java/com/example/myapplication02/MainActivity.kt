@@ -6,12 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar // Added import
@@ -21,20 +19,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons // Added for default icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home // Example Icon
-import androidx.compose.material.icons.filled.List // Example Icon
 import androidx.compose.material.icons.filled.AccountCircle // Example Icon
 import androidx.compose.material.icons.filled.Person // Example Icon for Login
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 // import androidx.compose.ui.tooling.preview.Preview // Preview might need adjustments
@@ -83,7 +76,7 @@ fun MyAppNavHost(
     val currentRoute = navBackStackEntry?.destination?.route
     val showMainScaffold = currentRoute != LOGIN_SCREEN_ROOT
     val id = loginViewModel.id.collectAsState()
-    val user = if (id.value.isNotBlank()) id.value else "Guest"
+    val user = id.value.ifBlank { "Guest" }
 
     // Define navigation items
     val navigationItems = listOf(
@@ -153,50 +146,6 @@ fun MyAppNavHost(
             addMemoViewModel = viewModel(),
             loginViewModel = loginViewModel,
         )
-    }
-}
-
-@Composable
-fun GreetingMain(
-    viewModel: CounterViewModel = viewModel(),
-    liveModel: CounterLiveModel = viewModel(),
-    name: String = "",
-    id: String = "",
-    password: String = "",
-    modifier: Modifier = Modifier,
-    navController: NavHostController,
-    count: Int,
-    onIncrementCount: () -> Unit
-) {
-    val viewModelCount = viewModel.count.collectAsState()
-    val liveModelCount = liveModel.counter.observeAsState(0)
-
-    Column(modifier = modifier) {
-        Text(
-            text = """
-                |Hello $name!
-                |your id : $id,
-                |password : $password
-            """.trimMargin()
-        )
-
-        Button(onClick = {
-            onIncrementCount()
-        }) {
-            Text(count.toString())
-        }
-
-        Button(onClick = {
-            viewModel.incrementCounter()
-        }) {
-            Text("ViewModel StateFlow 사용 카운트: ${viewModelCount.value}")
-        }
-
-        Button(onClick = {
-            liveModel.incrementCounter()
-        }) {
-            Text("LiveData 사용 카운트: ${liveModelCount.value}")
-        }
     }
 }
 
