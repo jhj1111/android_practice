@@ -1,7 +1,5 @@
 package com.example.myapplication02.ui.memolist
 
-import android.annotation.SuppressLint
-import android.widget.TextView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -26,31 +23,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.myapplication02.CREAT_MEMO_ROOT
-import com.example.myapplication02.ui.theme.MyApplication02Theme
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 // CREAT_MEMO_ROOT는 AddMemo 화면의 경로로 가정합니다.
 //  실제 경로 상수를 사용하세요. 예: const val CREAT_MEMO_ROOT = "add_memo"
 
 @Composable
 fun MemoList(
-    text: AddMemoViewModel,
+    AddMemoViewModel: AddMemoViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    val listArticles by text.listArticles.collectAsState()
+    val listArticles = AddMemoViewModel.listItems.collectAsState()
 
     Column(
         modifier = modifier
@@ -63,7 +51,7 @@ fun MemoList(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        if (listArticles.isEmpty()) {
+        if (listArticles.value.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -82,9 +70,9 @@ fun MemoList(
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp) // Space between items
             ) {
-                items(listArticles.toList()) { (title, content) ->
+                items(listArticles.value.toList()) { (id, title, content) ->
                     Row {
-                        MemoListItem(navController, text, title = title, content = content)
+                        MemoListItem(navController, AddMemoViewModel, id, title, content)
 //                        Spacer(modifier = Modifier.weight(1f))
 
                     }
@@ -96,7 +84,6 @@ fun MemoList(
 
         Button(
             onClick = {
-                text.clearTitleContent()
                 navController.navigate(CREAT_MEMO_ROOT) // 실제 AddMemo 화면 경로로 변경
             },
             modifier = Modifier.fillMaxWidth()
@@ -107,7 +94,17 @@ fun MemoList(
 }
 
 @Composable
-fun MemoListItem(navController: NavHostController, text: AddMemoViewModel, title: String, content: String) {
+fun MemoListItem(
+    navController: NavHostController,
+    AddMemoViewModel: AddMemoViewModel,
+    id: Int,
+    title: String,
+    content: String
+) {
+    val listItems = AddMemoViewModel.listItems.collectAsState()
+    val title = listItems.value.find { it.id == id }?.title ?: ""
+    val content = listItems.value.find { it.id == id }?.content ?: ""
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -117,7 +114,7 @@ fun MemoListItem(navController: NavHostController, text: AddMemoViewModel, title
                 Text(
                     text = title,
                     modifier = Modifier.clickable {
-                        text.updateArticle(title, content)
+                        AddMemoViewModel.updateItem(id)
                         navController.navigate(CREAT_MEMO_ROOT) // 실제 AddMemo 화면 경로로 변경,
                     },
                     style = MaterialTheme.typography.titleMedium,
@@ -132,51 +129,12 @@ fun MemoListItem(navController: NavHostController, text: AddMemoViewModel, title
             }
             IconButton(
                 onClick = {
-                    text.deleteArticle(title)
+                    AddMemoViewModel.removeMemoItem(Memo(id, title, content))
                 }
             ) {
                 Image(Icons.Filled.Delete, contentDescription = "Delete")
             }
         }
 
-    }
-}
-
-// Preview를 위한 Mock ViewModel
-class PreviewAddMemoViewModel : AddMemoViewModel() {
-    override val listArticles: StateFlow<Map<String, String>> =
-        MutableStateFlow(
-        mapOf(
-            "미리보기 제목 1" to "미리보기 내용입니다. 첫 번째 메모입니다.",
-            "미리보기 제목 2" to "두 번째 메모의 내용입니다. 잘 보이나요?"
-        )
-    )
-    // 필요한 다른 메소드나 상태가 있다면 여기서 override 할 수 있습니다.
-}
-
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun MemoListPreview() {
-    MyApplication02Theme {
-        MemoList(
-            text = PreviewAddMemoViewModel(), // Mock ViewModel 사용
-            navController = rememberNavController() // Preview용 NavController
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "MemoList - Empty")
-@Composable
-fun MemoListEmptyPreview() {
-    MyApplication02Theme {
-        MemoList(
-            text = object : AddMemoViewModel() { // 익명 객체로 빈 목록 Mock ViewModel
-                override val listArticles: StateFlow<Map<String, String>> =
-                    MutableStateFlow(emptyMap())
-            },
-            navController = rememberNavController()
-        )
     }
 }

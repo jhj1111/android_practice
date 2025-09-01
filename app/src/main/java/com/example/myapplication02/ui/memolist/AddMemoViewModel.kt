@@ -1,5 +1,7 @@
 package com.example.myapplication02.ui.memolist
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,7 +10,74 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-open class AddMemoViewModel: ViewModel() {
+class AddMemoViewModel(application: Application) : AndroidViewModel(application) {
+    private var _addMemoDao = AddMemoDatabase.getInstance(application).addMemoDao()
+    private val _isUpdate = MutableStateFlow(-1)
+    private val _listItems = MutableStateFlow<List<Memo>>(emptyList<Memo>())
+
+    val listItems: StateFlow<List<Memo>> get() = _listItems.asStateFlow()
+    val isUpdate: StateFlow<Int> = _isUpdate.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _addMemoDao.getAll().collect { list ->
+                _listItems.value = list
+            }
+        }
+    }
+
+    fun addMemoItem(item: Memo, id: Int = -1) {
+        viewModelScope.launch {
+            when (id) {
+                -1 -> _addMemoDao.insert(item)
+                else -> {
+//                    val memo = listItems.value.find { it.id == id } ?: return@launch
+                    _addMemoDao.update(Memo(id = id, item.title, item.content))
+                }
+            }
+//            _addMemoDao.insert(item)
+        }
+    }
+
+//    fun removeMemoItem(item: Memo) {
+//        viewModelScope.launch {
+//            _addMemoDao.delete(item)
+//        }
+//    }
+
+//    fun removeMemoItem(title: String) {
+//        val memo = (listItems as Memo).copy(title = title)
+//        viewModelScope.launch {
+//
+//            _addMemoDao.delete(memo)
+//        }
+//    }
+
+//    fun removeMemoItem(content: String) {
+//        viewModelScope.launch {
+//            val memo = (listItems as Memo).copy(content = content)
+//
+//            _addMemoDao.delete(memo)
+//        }
+//    }
+
+    fun removeMemoItem(item: Any) {
+        viewModelScope.launch {
+            val memo: Memo = when(item) {
+                is String -> (listItems as Memo).copy(title = item)
+                is Memo -> item
+                else -> throw IllegalArgumentException("Unsupported item type")
+            }
+            _addMemoDao.delete(memo)
+        }
+    }
+
+    fun updateItem(id: Int) {
+        _isUpdate.value = if (_isUpdate.value == -1) id else -1
+    }
+}
+
+open class AddMemoViewModel1: ViewModel() {
     // private MutableStateFlow
     private val _title = MutableStateFlow("")
     private val _preTitle = MutableStateFlow("")

@@ -33,7 +33,7 @@ fun AppNavigation(
         composable(MAIN_SCREEN_ROOT) { // Will be correctly padded by NavHost
             MemoList(
                 navController = navController,
-                text = addMemoViewModel
+                AddMemoViewModel = addMemoViewModel
             )
         }
 
