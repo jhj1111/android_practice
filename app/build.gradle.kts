@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+//    kotlin("jvm")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -40,7 +43,11 @@ android {
 }
 
 dependencies {
-    val nav_version = "2.9.3"
+//    implementation(libs.androidx.room.compiler)
+//    implementation(libs.androidx.room.ktx)
+//    implementation(libs.androidx.room.common.jvm)
+//    implementation(libs.androidx.room.runtime.jvm)
+    val nav_version = "2.7.2"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,6 +66,15 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.8.3")
     // StateFlow
     implementation("androidx.lifecycle:lifecycle-runtime-compose:${nav_version}")
+
+    // Room 런타임
+    implementation("androidx.room:room-runtime:${nav_version}")
+    // Kotlin 확장/코루틴 지
+    implementation("androidx.room:room-ktx:${nav_version}")
+//    implementation("com.google.dagger:dagger-compiler:${nav_version}")
+//    ksp("com.google.dagger:dagger-compiler:${nav_version}")
+    // Room 컴파일러
+    ksp("androidx.room:room-compiler:${nav_version}")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
