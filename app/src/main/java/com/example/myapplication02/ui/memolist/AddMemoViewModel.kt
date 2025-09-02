@@ -12,11 +12,11 @@ import kotlinx.coroutines.launch
 
 class AddMemoViewModel(application: Application) : AndroidViewModel(application) {
     private var _addMemoDao = AddMemoDatabase.getInstance(application).addMemoDao()
-    private val _isUpdate = MutableStateFlow(-1)
+    private var _isUpdate = -1
     private val _listItems = MutableStateFlow<List<Memo>>(emptyList<Memo>())
 
     val listItems: StateFlow<List<Memo>> get() = _listItems.asStateFlow()
-    val isUpdate: StateFlow<Int> = _isUpdate.asStateFlow()
+    val isUpdate: Int get() = _isUpdate
 
     init {
         viewModelScope.launch {
@@ -73,7 +73,8 @@ class AddMemoViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun updateItem(id: Int) {
-        _isUpdate.value = if (_isUpdate.value == -1) id else -1
+//        _isUpdate = if (_isUpdate == -1) id else -1
+        _isUpdate = id
     }
 }
 

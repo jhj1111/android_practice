@@ -39,16 +39,16 @@ import com.example.myapplication02.navigation.AppNavigation
 import com.example.myapplication02.ui.login.LogInViewModel
 import com.example.myapplication02.ui.theme.MyApplication02Theme
 
-const val MAIN_SCREEN_ROOT = "home"
+const val MAIN_SCREEN_ROOT = "Home"
 const val CREAT_MEMO_ROOT = "screen01"
-const val SCREEN02_SCREEN_ROOT = "screen02"
-const val LOGIN_SCREEN_ROOT = "login"
+const val SCREEN02_SCREEN_ROOT = "ToDo"
+const val LOGIN_SCREEN_ROOT = "Login"
 
 // Data class to represent navigation items
 data class BottomNavigationItem(
     val label: String,
     val icon: ImageVector,
-    val route: String
+    val route: String = label
 )
 
 
@@ -80,10 +80,10 @@ fun MyAppNavHost(
 
     // Define navigation items
     val navigationItems = listOf(
-        BottomNavigationItem("Home", Icons.Filled.Home, MAIN_SCREEN_ROOT), // Added Home for completeness
-        BottomNavigationItem("Screen01", Icons.AutoMirrored.Filled.List, CREAT_MEMO_ROOT),
-        BottomNavigationItem("Screen02", Icons.Filled.AccountCircle, SCREEN02_SCREEN_ROOT),
-        BottomNavigationItem("LogIn", Icons.Filled.Person, LOGIN_SCREEN_ROOT)
+        BottomNavigationItem(MAIN_SCREEN_ROOT, Icons.Filled.Home), // Added Home for completeness
+        BottomNavigationItem(CREAT_MEMO_ROOT, Icons.AutoMirrored.Filled.List),
+        BottomNavigationItem(SCREEN02_SCREEN_ROOT, Icons.Filled.AccountCircle),
+        BottomNavigationItem(LOGIN_SCREEN_ROOT, Icons.Filled.Person)
     )
 
     if (showMainScaffold) {

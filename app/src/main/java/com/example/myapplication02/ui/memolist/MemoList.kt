@@ -34,11 +34,11 @@ import com.example.myapplication02.CREAT_MEMO_ROOT
 
 @Composable
 fun MemoList(
-    AddMemoViewModel: AddMemoViewModel,
+    addMemoViewModel: AddMemoViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    val listArticles = AddMemoViewModel.listItems.collectAsState()
+    val listArticles = addMemoViewModel.listItems.collectAsState()
 
     Column(
         modifier = modifier
@@ -72,7 +72,7 @@ fun MemoList(
             ) {
                 items(listArticles.value.toList()) { (id, title, content) ->
                     Row {
-                        MemoListItem(navController, AddMemoViewModel, id, title, content)
+                        MemoListItem(navController, addMemoViewModel, id, title, content)
 //                        Spacer(modifier = Modifier.weight(1f))
 
                     }
@@ -84,6 +84,7 @@ fun MemoList(
 
         Button(
             onClick = {
+                addMemoViewModel.updateItem(-1)
                 navController.navigate(CREAT_MEMO_ROOT) // 실제 AddMemo 화면 경로로 변경
             },
             modifier = Modifier.fillMaxWidth()
@@ -96,12 +97,12 @@ fun MemoList(
 @Composable
 fun MemoListItem(
     navController: NavHostController,
-    AddMemoViewModel: AddMemoViewModel,
+    addMemoViewModel: AddMemoViewModel,
     id: Int,
     title: String,
     content: String
 ) {
-    val listItems = AddMemoViewModel.listItems.collectAsState()
+    val listItems = addMemoViewModel.listItems.collectAsState()
     val title = listItems.value.find { it.id == id }?.title ?: ""
     val content = listItems.value.find { it.id == id }?.content ?: ""
 
@@ -114,7 +115,7 @@ fun MemoListItem(
                 Text(
                     text = title,
                     modifier = Modifier.clickable {
-                        AddMemoViewModel.updateItem(id)
+                        addMemoViewModel.updateItem(id)
                         navController.navigate(CREAT_MEMO_ROOT) // 실제 AddMemo 화면 경로로 변경,
                     },
                     style = MaterialTheme.typography.titleMedium,
@@ -129,7 +130,7 @@ fun MemoListItem(
             }
             IconButton(
                 onClick = {
-                    AddMemoViewModel.removeMemoItem(Memo(id, title, content))
+                    addMemoViewModel.removeMemoItem(Memo(id, title, content))
                 }
             ) {
                 Image(Icons.Filled.Delete, contentDescription = "Delete")

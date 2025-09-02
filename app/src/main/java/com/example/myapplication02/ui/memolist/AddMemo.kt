@@ -31,32 +31,26 @@ import kotlinx.coroutines.flow.MutableStateFlow
 // Assuming MAIN_SCREEN_ROOT is defined elsewhere, e.g., in MainActivity.kt
 // const val MAIN_SCREEN_ROOT = "home"
 
-@Entity
-data class Memo(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val title: String,
-    val content: String
-)
 
 @Composable
 fun AddMemo(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    addMemoViewModel: AddMemoViewModel // ViewModel을 파라미터로 받도록 수정
+    addMemoViewModel: AddMemoViewModel, // ViewModel을 파라미터로 받도록 수정
+    id : Int = -1,
 ) {
     val listItems = addMemoViewModel.listItems.collectAsState()
-    val isUpdate = addMemoViewModel.isUpdate.collectAsState()
     val title = remember { mutableStateOf("") }
     val content = remember { mutableStateOf("") }
 
+
     // isUpdate 값이 변경될 때마다(수정 모드 진입/해제 시) 실행됩니다.
-    LaunchedEffect(isUpdate) {
-        if (isUpdate.value != -1) {
+    LaunchedEffect(id) {
+        if (id != -1) {
             // 수정 모드일 경우, ViewModel에서 해당 메모를 찾아 제목과 내용을 설정합니다.
-            val memoToUpdate = listItems.value.find { it.id == isUpdate.value }
+            val memoToUpdate = listItems.value.find { it.id == id }
             title.value = memoToUpdate?.title ?: ""
             content.value = memoToUpdate?.content ?: ""
-            addMemoViewModel.updateItem(-1)
         } else {
             // 새 메모 작성 모드일 경우, 필드를 비웁니다.
             title.value = ""
@@ -64,7 +58,7 @@ fun AddMemo(
         }
     }
 
-
+//    addMemoViewModel.updateItem(-1)
 
     Column(
         modifier = modifier
@@ -78,7 +72,7 @@ fun AddMemo(
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        Text(isUpdate.value.toString())
+        Text(id.toString())
 
         OutlinedTextField(
             value = title.value,
@@ -108,8 +102,7 @@ fun AddMemo(
         ) {
             OutlinedButton(
                 onClick = {
-                    title.value = ""
-                    content.value = ""
+                    navController.popBackStack()
                 },
                 modifier = Modifier.weight(1f)
             ) {
@@ -119,7 +112,11 @@ fun AddMemo(
             Button(
                 onClick = {
                     if (title.value.isNotBlank() && content.value.isNotBlank()) {
-                        addMemoViewModel.addMemoItem(Memo(title = title.value, content = content.value), isUpdate.value) // title, content 인자 제거 (ViewModel 내부 값 사용)
+                        addMemoViewModel.addMemoItem(
+                            Memo(title = title.value, content = content.value),
+                            id
+                        ) // title, content 인자 제거 (ViewModel 내부 값 사용)
+                        addMemoViewModel.updateItem(-1)
                         // 성공적으로 추가 후 이전 화면으로 돌아가거나, 목록 화면으로 이동
 //                        navController.popBackStack() // 이전 화면으로 돌아가기
                         navController.navigate(MAIN_SCREEN_ROOT) {

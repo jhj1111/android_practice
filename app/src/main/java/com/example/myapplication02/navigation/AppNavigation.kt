@@ -2,6 +2,7 @@ package com.example.myapplication02.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -22,7 +23,7 @@ import com.example.myapplication02.ui.login.LogInViewModel
 fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier, // This will be Modifier.padding(innerPadding) or Modifier.fillMaxSize()
-    addMemoViewModel: AddMemoViewModel = viewModel(),
+    addMemoViewModel: AddMemoViewModel,
     loginViewModel: LogInViewModel = viewModel(),
 ) {
     NavHost(
@@ -33,7 +34,7 @@ fun AppNavigation(
         composable(MAIN_SCREEN_ROOT) { // Will be correctly padded by NavHost
             MemoList(
                 navController = navController,
-                AddMemoViewModel = addMemoViewModel
+                addMemoViewModel = addMemoViewModel
             )
         }
 
@@ -46,9 +47,13 @@ fun AppNavigation(
         }
 
         composable(CREAT_MEMO_ROOT) {
+            val id: Int = addMemoViewModel.isUpdate
+            addMemoViewModel.updateItem(id)
+
             AddMemo( // Assuming Screen is defined in AddMemo.kt
                 navController = navController,
                 addMemoViewModel = addMemoViewModel,
+                id = id
             )
         }
 
