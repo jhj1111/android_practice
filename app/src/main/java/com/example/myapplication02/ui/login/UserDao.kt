@@ -31,8 +31,13 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll(): Flow<List<User>>
 
-    @Query("SELECT * FROM user WHERE id = :id")
-    fun getById(id: Int): Flow<User>
+    @Query("""
+        SELECT u.* FROM user u 
+        INNER JOIN login l ON u.logInOwnerId = l.id 
+        WHERE l.userId = :userId
+    """
+    )
+    suspend fun getByUserId(userId: String): User?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(user: User)

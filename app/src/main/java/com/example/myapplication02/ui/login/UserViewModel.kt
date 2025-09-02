@@ -3,6 +3,7 @@ package com.example.myapplication02.ui.login
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,9 +15,11 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private var _userDao = UserDatabase.getInstance(application).userDao()
     private val _listItems = MutableStateFlow<List<LogIn>>(emptyList<LogIn>())
     private val _listUsers = MutableStateFlow<List<User>>(emptyList<User>())
+    private val _currentUser = MutableStateFlow<User?>(null)
 
     val listItems: StateFlow<List<LogIn>> get() = _listItems.asStateFlow()
     val listUsers: StateFlow<List<User>> get() = _listUsers.asStateFlow()
+    val currentUser: StateFlow<User?> get() = _currentUser.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -29,6 +32,22 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun isValidUserId(userId: String): Boolean = listItems.value.none { it.userId == userId }
+
+    fun isValidUser(userId: String, password: String): Boolean =
+        listItems.value.any { it.userId == userId && it.password == password }
+
+    suspend fun getUserByLoginId(loginId: String): User? =
+        _userDao.getByUserId(loginId)
+
+    fun updateCurrentUser(user: User?) {
+        viewModelScope.launch {
+            _currentUser.value = user
+        }
+    }
+
+    fun logout() = updateCurrentUser(null)
+
     fun insertIdPassword(logIn: LogIn) {
         viewModelScope.launch {
             _logInDao.insert(logIn)
@@ -36,6 +55,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun updateIdPassword(logIn: LogIn) {
+        if(!isValidUserId(logIn.userId)) return
+
         viewModelScope.launch {
             _logInDao.update(logIn)
         }
@@ -48,6 +69,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun signUp(login: LogIn, user: User) {
+        if(!isValidUserId(login.userId)) return
+
         viewModelScope.launch {
             // 1. login 정보를 삽입하고, 자동으로 생성된 primary key를 가져옴
             val createdId = _logInDao.insert(login)

@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation // For password field
@@ -25,15 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.myapplication02.CREATE_USER_ROOT
 import com.example.myapplication02.MAIN_SCREEN_ROOT
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogIn(
-    logInViewModel: UserViewModel, // Added LogInViewModel parameter
+    userViewModel: UserViewModel, // Added LogInViewModel parameter
     modifier: Modifier = Modifier, // Keep the modifier parameter
     navController: NavHostController, // Removed default rememberNavController, as it's passed from NavHost
 ) {
-    val listItems = logInViewModel.listItems.collectAsState()
+    val listItems = userViewModel.listItems.collectAsState()
     val id = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
@@ -75,16 +77,24 @@ fun LogIn(
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            val scope = rememberCoroutineScope()
+
             Button(
                 onClick = {
-                    // Implement actual login logic here
-                    // For now, just navigate to the main screen
-                    navController.navigate(MAIN_SCREEN_ROOT) {
-                        // Optional: Clear back stack up to home if login is successful
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
+                    scope.launch {
+                        if (userViewModel.isValidUser(id.value, password.value)) {
+                            val currentUser: User? = userViewModel.getUserByLoginId(id.value)
+                            println("currentUser: $currentUser")
+
+                            userViewModel.updateCurrentUser(currentUser)
+                            navController.navigate(MAIN_SCREEN_ROOT) {
+                                // Optional: Clear back stack up to home if login is successful
+                                popUpTo(navController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true // Avoid multiple copies of home screen
+                            }
                         }
-                        launchSingleTop = true // Avoid multiple copies of home screen
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -101,6 +111,15 @@ fun LogIn(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("회원가입")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    navController.popBackStack()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("돌아가기")
             }
         }
     }

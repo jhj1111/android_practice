@@ -118,16 +118,17 @@ fun SignUpScreen(
             item {
                 Button(
                     onClick = {
+                        val user = User(
+                            name = name,
+                            email = email,
+                            phone = phone,
+                            address = address,
+                        )
                         userViewModel.signUp(
                             LogIn(userId = userId, password = password),
-                            User(
-                                name = name,
-                                email = email,
-                                phone = phone,
-                                address = address,
-                                created_at = ""
-                            )
+                            user
                         )
+                        userViewModel.updateCurrentUser(user)
                         navController.navigate(MAIN_SCREEN_ROOT)
                     },
                     modifier = Modifier

@@ -40,7 +40,7 @@ fun AppNavigation(
 
         composable(LOGIN_SCREEN_ROOT) { // Will be fillMaxSize by NavHost
             LogIn(
-                logInViewModel = userViewModel,
+                userViewModel = userViewModel,
                 navController = navController,
                 // modifier for LogIn will be its default. LogIn then uses Scaffold(Modifier.fillMaxSize())
             )

@@ -7,6 +7,9 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.myapplication02.utils.RoomTypeConverters
+import java.sql.Date
 
 /**
  * LogIn 테이블: 로그인 계정 정보
@@ -44,11 +47,12 @@ data class User(
     val email: String,
     val phone: String,
     val address: String,
-    val created_at: String,
+    val created_at: Date = Date(System.currentTimeMillis()),
 )
 
 // 데이터베이스 버전 번호를 2로 올립니다. (스키마가 변경되었기 때문)
-@Database(entities = [LogIn::class, User::class], version = 2)
+@Database(entities = [LogIn::class, User::class], version = 3)
+@TypeConverters(RoomTypeConverters::class)
 abstract class UserDatabase : RoomDatabase() {
     abstract fun logInDao(): LogInDao
     abstract fun userDao(): UserDao
@@ -64,12 +68,12 @@ abstract class UserDatabase : RoomDatabase() {
                     UserDatabase::class.java,
                     "user_database"
                 )
-                // 스키마가 변경되었으므로, 기존 데이터베이스를 삭제하고 새로 생성하도록 설정합니다.
-                // 개발 중에는 이 방법이 가장 간단합니다.
-                .fallbackToDestructiveMigration()
-                .build()
-                INSTANCE = instance
-                instance
+                    // 스키마가 변경되었으므로, 기존 데이터베이스를 삭제하고 새로 생성하도록 설정합니다.
+                    // 개발 중에는 이 방법이 가장 간단합니다.
+                    .fallbackToDestructiveMigration(false)
+                    .build()
+                    INSTANCE = instance
+                    instance
             }
         }
     }

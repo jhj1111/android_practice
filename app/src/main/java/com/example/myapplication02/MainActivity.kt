@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Home // Example Icon
 import androidx.compose.material.icons.filled.AccountCircle // Example Icon
 import androidx.compose.material.icons.filled.Person // Example Icon for Login
 import androidx.compose.material3.IconButton
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 // import androidx.compose.ui.tooling.preview.Preview // Preview might need adjustments
@@ -75,9 +76,9 @@ fun MyAppNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val showMainScaffold = currentRoute != LOGIN_SCREEN_ROOT
-    val id = "테스트중 기능 추가 필요"
+    val currentUser = userViewModel.currentUser.collectAsState()
 //    val user = id.value.ifBlank { "Guest" }
-    val user = id.ifBlank { "Guest" }
+    val currentUserName = currentUser.value?.name ?: "Guest"
 
     // Define navigation items
     val navigationItems = listOf(
@@ -94,13 +95,13 @@ fun MyAppNavHost(
                 TopAppBar(
                     title = {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(user)
+                            Text(currentUserName)
                             IconButton(onClick = {
-                                if (user=="Guest") navController.navigate(LOGIN_SCREEN_ROOT) else "loginViewModel.logout()"
+                                if (currentUserName=="Guest") navController.navigate(LOGIN_SCREEN_ROOT) else userViewModel.logout()
                             }
                             )
                             {
-                                Image(if (user=="Guest") Icons.Filled.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Login")
+                                Image(if (currentUserName=="Guest") Icons.Filled.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Login")
                             }
                         }
                     }
