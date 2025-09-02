@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.myapplication02.ADMIN_USER_LIST_ROOT
 import com.example.myapplication02.CREATE_USER_ROOT
 import com.example.myapplication02.ui.memolist.AddMemo
 import com.example.myapplication02.ui.memolist.AddMemoViewModel
@@ -16,6 +17,7 @@ import com.example.myapplication02.MAIN_SCREEN_ROOT
 import com.example.myapplication02.CREAT_MEMO_ROOT
 import com.example.myapplication02.ui.memolist.MemoList
 import com.example.myapplication02.SCREEN02_SCREEN_ROOT
+import com.example.myapplication02.ui.admin.AdminUserList
 import com.example.myapplication02.ui.login.UserViewModel
 import com.example.myapplication02.ui.login.SignUpScreen
 
@@ -67,6 +69,13 @@ fun AppNavigation(
             SignUpScreen(
                 navController = navController,
                 userViewModel = userViewModel
+            )
+        }
+
+        composable(ADMIN_USER_LIST_ROOT) {
+            AdminUserList(
+                userViewModel = userViewModel,
+                navController = navController,
             )
         }
     }

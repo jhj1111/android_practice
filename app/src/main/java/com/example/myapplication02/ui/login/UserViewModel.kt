@@ -16,16 +16,20 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val _listItems = MutableStateFlow<List<LogIn>>(emptyList<LogIn>())
     private val _listUsers = MutableStateFlow<List<User>>(emptyList<User>())
     private val _currentUser = MutableStateFlow<User?>(null)
+    private val _isUpdateUser = -1
 
     val listItems: StateFlow<List<LogIn>> get() = _listItems.asStateFlow()
     val listUsers: StateFlow<List<User>> get() = _listUsers.asStateFlow()
     val currentUser: StateFlow<User?> get() = _currentUser.asStateFlow()
+    val isUpdateUser: Int get() = _isUpdateUser
 
     init {
         viewModelScope.launch {
             _logInDao.getAll().collect { list ->
                 _listItems.value = list
             }
+        }
+        viewModelScope.launch {
             _userDao.getAll().collect { list ->
                 _listUsers.value = list
             }
@@ -36,6 +40,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun isValidUser(userId: String, password: String): Boolean =
         listItems.value.any { it.userId == userId && it.password == password }
+
+    suspend fun getUserByUserName(userName: String): List<User?> =
+        _userDao.getByUserName(userName)
 
     suspend fun getUserByLoginId(loginId: String): User? =
         _userDao.getByUserId(loginId)
@@ -90,6 +97,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteUser(user: User) {
         viewModelScope.launch {
             _userDao.delete(user)
+
+            val loginToDelete = LogIn(id = user.logInOwnerId, userId = "", password = "")
+            _logInDao.delete(loginToDelete)
         }
     }
 }

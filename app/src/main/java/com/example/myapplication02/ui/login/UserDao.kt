@@ -31,6 +31,10 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll(): Flow<List<User>>
 
+    @Query
+    ("SELECT * FROM user WHERE name LIKE '%' || :userName || '%'")
+    suspend fun getByUserName(userName: String): List<User?>
+
     @Query("""
         SELECT u.* FROM user u 
         INNER JOIN login l ON u.logInOwnerId = l.id 

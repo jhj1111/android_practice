@@ -44,6 +44,7 @@ const val CREAT_MEMO_ROOT = "screen01"
 const val SCREEN02_SCREEN_ROOT = "ToDo"
 const val LOGIN_SCREEN_ROOT = "Login"
 const val CREATE_USER_ROOT = "SignUp"
+const val ADMIN_USER_LIST_ROOT = "UserList"
 
 // Data class to represent navigation items
 data class BottomNavigationItem(
@@ -96,12 +97,22 @@ fun MyAppNavHost(
                     title = {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(currentUserName)
-                            IconButton(onClick = {
-                                if (currentUserName=="Guest") navController.navigate(LOGIN_SCREEN_ROOT) else userViewModel.logout()
-                            }
-                            )
-                            {
-                                Image(if (currentUserName=="Guest") Icons.Filled.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Login")
+                            Row {
+                                IconButton(onClick = {
+                                    if (currentUserName=="Guest") navController.navigate(LOGIN_SCREEN_ROOT) else userViewModel.logout()
+                                }
+                                )
+                                {
+                                    Image(if (currentUserName=="Guest") Icons.Filled.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Login")
+                                }
+
+                                if (currentUserName=="admin") {
+                                    IconButton(onClick = {
+                                        navController.navigate(ADMIN_USER_LIST_ROOT)
+                                    }) {
+                                        Image(Icons.AutoMirrored.Filled.List, contentDescription = "Login")
+                                    }
+                                }
                             }
                         }
                     }
