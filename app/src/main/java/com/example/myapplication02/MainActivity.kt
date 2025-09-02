@@ -45,6 +45,7 @@ const val SCREEN02_SCREEN_ROOT = "ToDo"
 const val LOGIN_SCREEN_ROOT = "Login"
 const val CREATE_USER_ROOT = "SignUp"
 const val ADMIN_USER_LIST_ROOT = "UserList"
+const val USER_INFO_ROOT = "UserInfo"
 
 // Data class to represent navigation items
 data class BottomNavigationItem(
@@ -86,7 +87,12 @@ fun MyAppNavHost(
         BottomNavigationItem(MAIN_SCREEN_ROOT, Icons.Filled.Home), // Added Home for completeness
         BottomNavigationItem(CREAT_MEMO_ROOT, Icons.AutoMirrored.Filled.List),
         BottomNavigationItem(SCREEN02_SCREEN_ROOT, Icons.Filled.AccountCircle),
-        BottomNavigationItem(LOGIN_SCREEN_ROOT, Icons.Filled.Person)
+        if (currentUserName == "Guest") {
+            BottomNavigationItem(LOGIN_SCREEN_ROOT, Icons.Filled.Person)
+        } else {
+            BottomNavigationItem(USER_INFO_ROOT, Icons.Filled.Person)
+        }
+
     )
 
     if (showMainScaffold) {
@@ -99,7 +105,12 @@ fun MyAppNavHost(
                             Text(currentUserName)
                             Row {
                                 IconButton(onClick = {
-                                    if (currentUserName=="Guest") navController.navigate(LOGIN_SCREEN_ROOT) else userViewModel.logout()
+                                    if (currentUserName=="Guest") {
+                                        navController.navigate(LOGIN_SCREEN_ROOT)
+                                    } else {
+                                        userViewModel.logout()
+                                        navController.popBackStack()
+                                    }
                                 }
                                 )
                                 {
@@ -126,18 +137,22 @@ fun MyAppNavHost(
                             label = { Text(item.label) },
                             selected = currentRoute == item.route,
                             onClick = {
-                                navController.navigate(item.route) {
-                                    // Pop up to the start destination of the graph to
-                                    // avoid building up a large stack of destinations
-                                    // on the back stack as users select items
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
+                                if (item.route == MAIN_SCREEN_ROOT) {
+                                    navController.popBackStack()
+                                } else {
+                                    navController.navigate(item.route) {
+                                        // Pop up to the start destination of the graph to
+                                        // avoid building up a large stack of destinations
+                                        // on the back stack as users select items
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        // Avoid multiple copies of the same destination when
+                                        // reselecting the same item
+                                        launchSingleTop = true
+                                        // Restore state when reselecting a previously selected item
+                                        restoreState = true
                                     }
-                                    // Avoid multiple copies of the same destination when
-                                    // reselecting the same item
-                                    launchSingleTop = true
-                                    // Restore state when reselecting a previously selected item
-                                    restoreState = true
                                 }
                             }
                         )

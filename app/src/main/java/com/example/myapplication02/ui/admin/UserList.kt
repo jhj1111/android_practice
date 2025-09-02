@@ -40,10 +40,7 @@ fun AdminUserList(
     modifier: Modifier = Modifier,
     navController: NavHostController,
 ) {
-    val listLogins = userViewModel.listItems.collectAsState()
     val listUsers = userViewModel.listUsers.collectAsState()
-    val listLoginIds = listLogins.value.map { it.userId }
-    val listUserNames = listUsers.value.map { it.name }
     val inputUserName = remember { mutableStateOf("") }
     val searchingName = remember { mutableStateOf("") }
     val searchedUserId = remember { mutableStateListOf<User?>() }

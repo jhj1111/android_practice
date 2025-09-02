@@ -20,7 +20,7 @@ interface LogInDao {
     suspend fun insert(login: LogIn): Long
 
     @Update
-    suspend fun update(login: LogIn)
+    suspend fun update(login: LogIn): Int
 
     @Delete
     suspend fun delete(login: LogIn)
@@ -42,6 +42,15 @@ interface UserDao {
     """
     )
     suspend fun getByUserId(userId: String): User?
+
+    @Query(
+        """
+        SELECT l.* FROM login l 
+        INNER JOIN user u ON u.logInOwnerId = l.id 
+        WHERE u.name = :userName
+    """
+    )
+    suspend fun getLogInIdByUserId(userName: String): List<LogIn?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(user: User)

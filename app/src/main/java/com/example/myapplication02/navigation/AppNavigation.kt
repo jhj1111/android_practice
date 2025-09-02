@@ -17,9 +17,11 @@ import com.example.myapplication02.MAIN_SCREEN_ROOT
 import com.example.myapplication02.CREAT_MEMO_ROOT
 import com.example.myapplication02.ui.memolist.MemoList
 import com.example.myapplication02.SCREEN02_SCREEN_ROOT
+import com.example.myapplication02.USER_INFO_ROOT
 import com.example.myapplication02.ui.admin.AdminUserList
 import com.example.myapplication02.ui.login.UserViewModel
 import com.example.myapplication02.ui.login.SignUpScreen
+import com.example.myapplication02.ui.login.UserInfo
 
 @Composable
 fun AppNavigation(
@@ -66,14 +68,25 @@ fun AppNavigation(
         }
 
         composable(CREATE_USER_ROOT) {
+            val id: Int = userViewModel.isUpdateUser
+            userViewModel.updateIsUpdateUser(id)
+
             SignUpScreen(
                 navController = navController,
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                id = id,
             )
         }
 
         composable(ADMIN_USER_LIST_ROOT) {
             AdminUserList(
+                userViewModel = userViewModel,
+                navController = navController,
+            )
+        }
+
+        composable(USER_INFO_ROOT) {
+            UserInfo(
                 userViewModel = userViewModel,
                 navController = navController,
             )

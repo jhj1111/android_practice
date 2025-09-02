@@ -16,7 +16,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val _listItems = MutableStateFlow<List<LogIn>>(emptyList<LogIn>())
     private val _listUsers = MutableStateFlow<List<User>>(emptyList<User>())
     private val _currentUser = MutableStateFlow<User?>(null)
-    private val _isUpdateUser = -1
+    private var _isUpdateUser = -1
 
     val listItems: StateFlow<List<LogIn>> get() = _listItems.asStateFlow()
     val listUsers: StateFlow<List<User>> get() = _listUsers.asStateFlow()
@@ -41,6 +41,13 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun isValidUser(userId: String, password: String): Boolean =
         listItems.value.any { it.userId == userId && it.password == password }
 
+    fun updateIsUpdateUser(id: Int) {
+        _isUpdateUser = id
+    }
+
+    suspend fun getLogInIdByUserId(userName: String): List<LogIn?> =
+        _userDao.getLogInIdByUserId(userName)
+
     suspend fun getUserByUserName(userName: String): List<User?> =
         _userDao.getByUserName(userName)
 
@@ -53,7 +60,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun logout() = updateCurrentUser(null)
+    fun logout() {
+        updateCurrentUser(null)
+        updateIsUpdateUser(-1)
+    }
 
     fun insertIdPassword(logIn: LogIn) {
         viewModelScope.launch {
@@ -75,8 +85,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun signUp(login: LogIn, user: User) {
-        if(!isValidUserId(login.userId)) return
+    suspend fun signUp(login: LogIn, user: User): User? {
+        if(!isValidUserId(login.userId)) return null
 
         viewModelScope.launch {
             // 1. login 정보를 삽입하고, 자동으로 생성된 primary key를 가져옴
@@ -86,12 +96,17 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             val userWithLoginInfo = user.copy(logInOwnerId = createdId.toInt())
             _userDao.insert(userWithLoginInfo)
         }
+        return getUserByLoginId(login.userId)
     }
 
-    fun updateUser(user: User) {
+    suspend fun updateUser(login: LogIn, user: User): User? {
+        if(!isValidUserId(login.userId)) return null
+
         viewModelScope.launch {
+            _logInDao.update(login)
             _userDao.update(user)
         }
+        return getUserByLoginId(login.userId)
     }
 
     fun deleteUser(user: User) {
