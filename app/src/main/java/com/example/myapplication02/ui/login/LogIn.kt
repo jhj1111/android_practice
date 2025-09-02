@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,17 +23,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation // For password field
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.myapplication02.CREATE_USER_ROOT
 import com.example.myapplication02.MAIN_SCREEN_ROOT
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogIn(
-    logInViewModel: LogInViewModel, // Added LogInViewModel parameter
+    logInViewModel: UserViewModel, // Added LogInViewModel parameter
     modifier: Modifier = Modifier, // Keep the modifier parameter
     navController: NavHostController, // Removed default rememberNavController, as it's passed from NavHost
 ) {
-    val id = logInViewModel.id.collectAsState() // Use the provided LogInViewModel
-    val password = logInViewModel.password.collectAsState() // Use the provided LogInViewModel
+    val listItems = logInViewModel.listItems.collectAsState()
+    val id = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
 
     Scaffold(
         modifier = modifier.fillMaxSize(), // Apply the passed modifier
@@ -55,7 +56,7 @@ fun LogIn(
 
             OutlinedTextField(
                 value = id.value,
-                onValueChange = { newId -> logInViewModel.updateId(newId) },
+                onValueChange = { newId -> id.value = newId },
                 label = { Text("아이디") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
@@ -65,7 +66,7 @@ fun LogIn(
 
             OutlinedTextField(
                 value = password.value,
-                onValueChange = { newPassword -> logInViewModel.updatePassword(newPassword) },
+                onValueChange = { newPassword -> password.value = newPassword },
                 label = { Text("비밀번호") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(), // Hides password characters
@@ -89,6 +90,17 @@ fun LogIn(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("로그인")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate(CREATE_USER_ROOT)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("회원가입")
             }
         }
     }

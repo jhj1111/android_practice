@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Home // Example Icon
 import androidx.compose.material.icons.filled.AccountCircle // Example Icon
 import androidx.compose.material.icons.filled.Person // Example Icon for Login
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 // import androidx.compose.ui.tooling.preview.Preview // Preview might need adjustments
@@ -36,13 +35,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication02.navigation.AppNavigation
-import com.example.myapplication02.ui.login.LogInViewModel
+import com.example.myapplication02.ui.login.UserViewModel
 import com.example.myapplication02.ui.theme.MyApplication02Theme
 
 const val MAIN_SCREEN_ROOT = "Home"
 const val CREAT_MEMO_ROOT = "screen01"
 const val SCREEN02_SCREEN_ROOT = "ToDo"
 const val LOGIN_SCREEN_ROOT = "Login"
+const val CREATE_USER_ROOT = "SignUp"
 
 // Data class to represent navigation items
 data class BottomNavigationItem(
@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApplication02Theme {
-                MyAppNavHost(loginViewModel = viewModel())
+                MyAppNavHost(userViewModel = viewModel())
             }
         }
     }
@@ -69,14 +69,15 @@ class MainActivity : ComponentActivity() {
 fun MyAppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    loginViewModel: LogInViewModel,
+    userViewModel: UserViewModel,
 ) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val showMainScaffold = currentRoute != LOGIN_SCREEN_ROOT
-    val id = loginViewModel.id.collectAsState()
-    val user = id.value.ifBlank { "Guest" }
+    val id = "테스트중 기능 추가 필요"
+//    val user = id.value.ifBlank { "Guest" }
+    val user = id.ifBlank { "Guest" }
 
     // Define navigation items
     val navigationItems = listOf(
@@ -95,7 +96,7 @@ fun MyAppNavHost(
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(user)
                             IconButton(onClick = {
-                                if (user=="Guest") navController.navigate(LOGIN_SCREEN_ROOT) else loginViewModel.logout()
+                                if (user=="Guest") navController.navigate(LOGIN_SCREEN_ROOT) else "loginViewModel.logout()"
                             }
                             )
                             {
@@ -136,7 +137,7 @@ fun MyAppNavHost(
                 navController = navController,
                 modifier = Modifier.padding(innerPadding),
                 addMemoViewModel = viewModel(),
-                loginViewModel = loginViewModel,
+                userViewModel = userViewModel,
             )
         }
     } else {
@@ -144,7 +145,7 @@ fun MyAppNavHost(
             navController = navController,
             modifier = modifier.fillMaxSize(),
             addMemoViewModel = viewModel(),
-            loginViewModel = loginViewModel,
+            userViewModel = userViewModel,
         )
     }
 }
