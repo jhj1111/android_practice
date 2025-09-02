@@ -179,14 +179,15 @@ fun SignUpScreen(
                                 )
                             }
                         }
-                        val idNew = if (id == -1) listItems.last().id + 1 else id
+                        // val idNew = if (id == -1) listItems.last().id + 1 else id
 //                        println("idNew: $idNew")
-                        val user = User(id = idNew, logInOwnerId = idNew, name = name, email = email, phone = phone, address = address)
+                        // val user = User(id = idNew, logInOwnerId = idNew, name = name, email = email, phone = phone, address = address)
 
 //                        println("user: $user")
+                        navController.navigate(MAIN_SCREEN_ROOT)
+                        val user = userViewModel.getUserByLoginId(name)
                         userViewModel.updateCurrentUser(user)
                         userViewModel.updateIsUpdateUser(-1)
-                        navController.navigate(MAIN_SCREEN_ROOT)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
