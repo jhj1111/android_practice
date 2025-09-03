@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.myapplication02.ui.login.LogIn
 import com.example.myapplication02.ui.login.User
 import com.example.myapplication02.ui.login.UserViewModel
 import kotlinx.coroutines.launch
@@ -41,9 +42,11 @@ fun AdminUserList(
     navController: NavHostController,
 ) {
     val listUsers = userViewModel.listUsers.collectAsState()
+    val listItems = userViewModel.listItems.collectAsState()
     val inputUserName = remember { mutableStateOf("") }
     val searchingName = remember { mutableStateOf("") }
     val searchedUserId = remember { mutableStateListOf<User?>() }
+    val searchedLoginInfo = remember { mutableStateListOf<LogIn?>() }
     val isChecked = remember { mutableStateListOf<Boolean>() }
     for (i in 0 until listUsers.value.size) {
         isChecked.add(false)
@@ -71,9 +74,13 @@ fun AdminUserList(
                             // 예: 할 일 목록에 추가하고 입력 필드 비우기
                             if (inputUserName.toString().isNotBlank()) { // 비어있지 않은 경우에만 처리
                                 searchingName.value = inputUserName.value
-                                val searchedUser = userViewModel.getUserByUserName(inputUserName.value)
+                                val searchedUser = userViewModel.findUsersByUserName(inputUserName.value)
+                                val searchedLogin = userViewModel.findLogInByUserName(inputUserName.value)
+
                                 searchedUserId.clear()
+                                searchedLoginInfo.clear()
                                 searchedUserId.addAll(searchedUser)
+                                searchedLoginInfo.addAll(searchedLogin)
                             }
                         }
                     }
@@ -130,7 +137,7 @@ fun AdminUserList(
                             } // 클릭 시 상태 변경
                         )
                         Text(
-                            searchedUserId[index]?.name ?: "",
+                            "아이디 : ${searchedLoginInfo[index]?.userId ?: ""}, 닉네임 : ${searchedUserId[index]?.name ?: ""}",
                             // textDecoration = if (isChecked[index]) TextDecoration.LineThrough else TextDecoration.None
                         )
                         Spacer(modifier = Modifier.weight(1f))
@@ -163,7 +170,7 @@ fun AdminUserList(
                             } // 클릭 시 상태 변경
                         )
                         Text(
-                            listUsers.value[index].name,
+                            "아이디 : ${listItems.value[index].userId}, 닉네임 : ${listUsers.value[index].name}",
 //                            textDecoration = if (isChecked[index]) TextDecoration.LineThrough else TextDecoration.None
                         )
                         Spacer(modifier = Modifier.weight(1f))

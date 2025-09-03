@@ -12,7 +12,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -25,8 +30,12 @@ fun UserInfo(
     userViewModel: UserViewModel,
 ) {
     val currentUser = userViewModel.currentUser.collectAsState()
-    val UserLoginInfo = userViewModel.listItems.collectAsState().value.find { it.id == currentUser.value?.id }
-    val UserInfo = userViewModel.listUsers.collectAsState().value.find { it.id == currentUser.value?.id }
+    var userLoginInfo by remember { mutableStateOf<LogIn?>(null) }
+    var userInfo by remember { mutableStateOf<User?>(null) }
+    LaunchedEffect(currentUser.value) {
+        userLoginInfo = userViewModel.getLogInIdByUserName(currentUser.value?.name ?: "")
+        userInfo = userViewModel.getUserByLoginId(userLoginInfo?.userId ?: "")
+    }
 
     Scaffold(
         topBar = {
@@ -42,15 +51,15 @@ fun UserInfo(
         ) {
 //            Text(currentUser.toString())
             Text("로그인 정보")
-            Text("아이디: ${UserLoginInfo?.userId}")
-            Text("비밀번호: ${UserLoginInfo?.password}")
+            Text("아이디: ${userLoginInfo?.userId}")
+            Text("비밀번호: ${userLoginInfo?.password}")
             Spacer(modifier = Modifier.height(16.dp))
 
             Text("사용자 정보")
-            Text("이름: ${UserInfo?.name}")
-            Text("이메일: ${UserInfo?.email}")
-            Text("전화번호: ${UserInfo?.phone}")
-            Text("주소: ${UserInfo?.address}")
+            Text("이름: ${userInfo?.name}")
+            Text("이메일: ${userInfo?.email}")
+            Text("전화번호: ${userInfo?.phone}")
+            Text("주소: ${userInfo?.address}")
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 val id = currentUser.value?.id ?: -1
