@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.AccountCircle // Example Icon
 import androidx.compose.material.icons.filled.Person // Example Icon for Login
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 // import androidx.compose.ui.tooling.preview.Preview // Preview might need adjustments
@@ -36,8 +38,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication02.navigation.AppNavigation
+import com.example.myapplication02.ui.login.User
 import com.example.myapplication02.ui.login.UserViewModel
 import com.example.myapplication02.ui.theme.MyApplication02Theme
+import kotlinx.coroutines.launch
 
 const val MAIN_SCREEN_ROOT = "Home"
 const val CREAT_MEMO_ROOT = "screen01"
@@ -110,6 +114,7 @@ fun MyAppNavHost(
                                     } else {
                                         userViewModel.logout()
                                         navController.popBackStack()
+                                        navController.navigate(MAIN_SCREEN_ROOT)
                                     }
                                 }
                                 )
@@ -139,6 +144,7 @@ fun MyAppNavHost(
                             onClick = {
                                 if (item.route == MAIN_SCREEN_ROOT) {
                                     navController.popBackStack()
+                                    navController.navigate(MAIN_SCREEN_ROOT)
                                 } else {
                                     navController.navigate(item.route) {
                                         // Pop up to the start destination of the graph to
