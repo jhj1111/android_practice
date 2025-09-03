@@ -31,9 +31,15 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll(): Flow<List<User>>
 
-    @Query
-    ("SELECT * FROM user WHERE name LIKE '%' || :userName || '%'")
-    suspend fun getByUserName(userName: String): List<User?>
+    @Query("SELECT * FROM user WHERE name LIKE '%' || :userName || '%'")
+    suspend fun findUserByUserName(userName: String): List<User?>
+
+    @Query("""
+        SELECT l.* FROM login l 
+        INNER JOIN user u ON u.logInOwnerId = l.id 
+        WHERE name LIKE '%' || :userName || '%'
+    """)
+    suspend fun findLogInByUserName(userName: String): List<LogIn?>
 
     @Query("""
         SELECT u.* FROM user u 
@@ -50,7 +56,7 @@ interface UserDao {
         WHERE u.name = :userName
     """
     )
-    suspend fun getLogInIdByUserId(userName: String): List<LogIn?>
+    suspend fun getLogInIdByUserName(userName: String): LogIn?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(user: User)

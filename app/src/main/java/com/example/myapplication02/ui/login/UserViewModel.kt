@@ -3,7 +3,6 @@ package com.example.myapplication02.ui.login
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,11 +44,14 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         _isUpdateUser = id
     }
 
-    suspend fun getLogInIdByUserId(userName: String): List<LogIn?> =
-        _userDao.getLogInIdByUserId(userName)
+    suspend fun getLogInIdByUserName(userName: String): LogIn? =
+        _userDao.getLogInIdByUserName(userName)
 
-    suspend fun getUserByUserName(userName: String): List<User?> =
-        _userDao.getByUserName(userName)
+    suspend fun findUsersByUserName(userName: String): List<User?> =
+        _userDao.findUserByUserName(userName)
+
+    suspend fun findLogInByUserName(userName: String): List<LogIn?> =
+        _userDao.findLogInByUserName(userName)
 
     suspend fun getUserByLoginId(loginId: String): User? =
         _userDao.getByUserId(loginId)
